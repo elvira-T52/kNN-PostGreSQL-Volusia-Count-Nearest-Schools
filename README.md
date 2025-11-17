@@ -6,7 +6,7 @@ PostGIS-based geospatial analysis calculating the nearest elementary, middle, an
 
 ## Overview
 
-This project uses PostgreSQL/PostGIS to perform K-Nearest Neighbor (KNN) spatial analysis on Volusia County parcel data, identifying the closest public school at each education level and calculating distances in miles. Results are stored directly in the parcel table for real estate analysis to plot the pricing of houses relative to school zones.
+This project uses PostgreSQL/PostGIS to perform K-Nearest Neighbor (KNN) spatial analysis on Volusia County parcel data, identifying the closest public school at each education level and calculating distances in miles. Results are stored directly in the parcel table for real estate analysis to plot the pricing of houses relative to school zones. A final layer was aggregated for both nearest schools, fire houses, hospitals, local crime, and total cost of each address.
 
 ## Technology Stack
 
