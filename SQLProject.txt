@@ -1,0 +1,57 @@
+--show all schools from the Volusia GIS layers
+select * from volusia.gis_schools where address IS NOT Null;
+
+--Connect the gis school layer to get parcel id for each school, joining on address.
+select s.name, s.zip4, s.geom, p.pid from volusia.gis_schools s join volusia.gis_address p on s.address=p.address;
+
+--Find the nearest Elementary school to the selected parcel.
+select s.name, s.address, s.zipcode, s.geom, ST_Distance(s.geom, (select p2.geom from volusia.parcel p2 where parid=3565215))/5280
+from volusia.gis_schools s
+where s.address IS NOT NULL AND s.name ILIKE '%elem%'
+order by s.geom <->(select p2.geom from volusia.parcel p2 where parid=3565215)
+limit 1;
+
+--Find the nearest middle school to the selected parcel.
+select s.name, s.address, s.zipcode, s.geom, ST_Distance(s.geom, (select p2.geom from volusia.parcel p2 where parid=3565215))/5280
+from volusia.gis_schools s
+where s.address IS NOT NULL AND s.name ILIKE '%middle%'
+order by s.geom <->(select p2.geom from volusia.parcel p2 where parid=3565215)
+limit 1;
+
+--find the nearest high school to the selected parcel.
+select s.name, s.address, s.zipcode, s.geom, ST_Distance(s.geom, (select p2.geom from volusia.parcel p2 where parid=3565215))/5280
+from volusia.gis_schools s
+where s.address IS NOT NULL AND s.name ILIKE '%high%'
+order by s.geom <->(select p2.geom from volusia.parcel p2 where parid=3565215)
+limit 1;
+
+--add columns to sales analysis
+ALTER TABLE volusia.sales_analysis
+add column nearest_Elem_School VARCHAR,
+add column distance_To_Elem_School double precision,
+add column nearest_Middle_School VARCHAR,
+add column distance_To_Middle_School double precision,
+add column nearest_High_School VARCHAR,
+add column distance_To_High_School double precision;
+
+
+ALTER TABLE volusia.parcel
+add column nearest_Elem_School VARCHAR,
+add column distance_To_Elem_School double precision,
+add column nearest_Middle_School VARCHAR,
+add column distance_To_Middle_School double precision,
+add column nearest_High_School VARCHAR,
+add column distance_To_High_School double precision;
+
+update volusia.parcel
+set nearest_Elem_school=NULL,
+set nearest_Middle_School=NULL,
+set nearest_High_School=NULL;
+
+
+
+--After the SQL Loops to find the KNN of schools for both Elem, Middle, and Highschools.
+select geom, parid, nearest_elem_school, distance_to_elem_school, nearest_middle_school, distance_to_middle_school, nearest_high_school, distance_to_high_school 
+from volusia.parcel 
+where nearest_elem_school IS NOT NULL AND nearest_middle_school IS NOT NULL AND nearest_high_school IS NOT NULL
+limit 50;
